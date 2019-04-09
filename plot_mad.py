@@ -103,7 +103,7 @@ def MAD(data, axis=0):
     absdev = np.abs(data - np.expand_dims(np.median(data, axis=axis), axis))
     return np.median(absdev, axis=axis)/0.6745
 
-def loss(y_pred, y_truth):
+def loss_func(y_pred, y_truth):
     """This function calculates a loss function based on truth and prediction."""
     return (y_truth-y_pred)/(1+y_pred)
 
@@ -157,7 +157,7 @@ for i, sample_size in enumerate(train_sample_sizes):
 
     # evaluating performance
     print("-> Evaluating performance...")
-    mad = MAD(loss(y_pred, y_test))
+    mad = MAD(loss_func(y_pred, y_test))
     print("-> Performance MAD: %.4f" % mad)
     
     # assign value to MAD list
@@ -172,20 +172,20 @@ if not os.path.exists(output_dir):
 # save data for future processing
 data_filename = os.path.join(output_dir, "%s.npy" % output_prefix)
 print("Saving %s" % data_filename)
-output_data = np.stack([sample_sizes, mads], axis=0)
+output_data = np.stack([train_sample_sizes, mads], axis=0)
 np.save(data_filename, output_data)
 
 # save plots
 fig_filename = os.path.join(output_dir, "%s.png" % output_prefix)
 print("Saving %s" % fig_filename)
 plt.figure(figsize=(12,9))
-plt.plot(sample_sizes, mads, 'b.')
+plt.plot(train_sample_sizes, mads, 'b.')
 
 # curve fitting
-popt, pcov = curve_fit(target_func, sample_sizes, mads, bounds=([0,0,-1],[5,5,0]))
+popt, pcov = curve_fit(target_func, train_sample_sizes, mads, bounds=([0,0,-1],[5,5,0]))
 c, A, n = popt
 label = r"$%.4f + %.4f N^{%.1f}$" % (c, A, n)
-plt.plot(sample_sizes, target_func(sample_sizes, *popt), 'k-', label=label)
+plt.plot(train_sample_sizes, target_func(train_sample_sizes, *popt), 'k-', label=label)
 
 plt.xlabel("training sample sizes")
 plt.ylabel("MAD")
