@@ -104,8 +104,12 @@ def MAD(data, axis=0):
     return np.median(absdev, axis=axis)/0.6745
 
 def loss_func(y_pred, y_truth):
-    """This function calculates a loss function based on truth and prediction."""
-    return (y_truth-y_pred)/(1+y_pred)
+    """This function calculates a loss function based on truth and prediction.
+    loss = (z_photo - z_spec) / (1 + z_spec)
+    and z_photo -> y_pred
+        z_spec  -> y_truth
+    """
+    return (y_pred-y_truth)/(1+y_truth)
 
 def target_func(x, c, A, n):
     """Target function for curve fitting"""
