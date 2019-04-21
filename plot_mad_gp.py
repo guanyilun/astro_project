@@ -25,10 +25,8 @@ from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import StandardScaler
 from scipy.optimize import curve_fit
 
-from xgboost import XGBRegressor
-from sklearn.ensemble import RandomForestRegressor, AdaBoostRegressor
-from sklearn.neighbors import KNeighborsRegressor
-
+from sklearn.gaussian_process import GaussianProcessRegressor
+import gc
 #####################
 # define parameters #
 #####################
@@ -41,14 +39,18 @@ train_sample_sizes = np.logspace(3, 6, 30)  # 1E3 -> 1E6
 test_sample_size = int(1E5)  # size of test sample
 features_name = ['u10', 'g10', 'r10', 'i10', 'z10', 'y10']
 labels_name = 'redshift'
-# Regressor = RandomForestRegressor
-# Regressor = XGBRegressor
-# Regressor = KNeighborsRegressor
-Regressor = AdaBoostRegressor
+
+# regressor parameters
+Regressor = GaussianProcessRegressor
+
+# parameters = {
+#     'n_restarts_optimizer': 9
+# }
+parameters = {}
 
 # output parameters
 output_dir = 'outputs'
-output_prefix = 'adaboost'
+output_prefix = 'gp'
 
 ###############
 # plot styles #
@@ -143,6 +145,8 @@ mads = np.zeros(len(train_sample_sizes))
 
 # loop over sample_size
 for i, sample_size in enumerate(train_sample_sizes):
+    # collect garbege
+    gc.collect()
     # first round it to nearest integar if not already 
     sample_size = int(round(sample_size))
     print("sample_size: %d" % sample_size)
@@ -157,7 +161,7 @@ for i, sample_size in enumerate(train_sample_sizes):
 
     # train model
     print("-> Training model...")
-    model = Regressor()
+    model = Regressor(**parameters)
     model.fit(X_train, y_train)
 
     # test model

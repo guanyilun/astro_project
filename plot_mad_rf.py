@@ -25,9 +25,7 @@ from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import StandardScaler
 from scipy.optimize import curve_fit
 
-from xgboost import XGBRegressor
-from sklearn.ensemble import RandomForestRegressor, AdaBoostRegressor
-from sklearn.neighbors import KNeighborsRegressor
+from sklearn.ensemble import RandomForestRegressor
 
 #####################
 # define parameters #
@@ -41,14 +39,17 @@ train_sample_sizes = np.logspace(3, 6, 30)  # 1E3 -> 1E6
 test_sample_size = int(1E5)  # size of test sample
 features_name = ['u10', 'g10', 'r10', 'i10', 'z10', 'y10']
 labels_name = 'redshift'
-# Regressor = RandomForestRegressor
-# Regressor = XGBRegressor
-# Regressor = KNeighborsRegressor
-Regressor = AdaBoostRegressor
 
+Regressor = RandomForestRegressor
+# parameters = {
+#     "n_neighbors": 7,
+#     "leaf_size": 20,
+#     "p": 2,
+# }
+parameters = {}
 # output parameters
 output_dir = 'outputs'
-output_prefix = 'adaboost'
+output_prefix = 'randfor'
 
 ###############
 # plot styles #
@@ -56,7 +57,6 @@ output_prefix = 'adaboost'
 
 mpl.style.use('classic')
 plt.rc('font', family='serif', serif='Times')
-# plt.rc('text', usetex=True)
 plt.rc('xtick', labelsize=12)
 plt.rc('ytick', labelsize=12)
 plt.rc('axes', labelsize=12)
@@ -157,7 +157,7 @@ for i, sample_size in enumerate(train_sample_sizes):
 
     # train model
     print("-> Training model...")
-    model = Regressor()
+    model = Regressor(**parameters)
     model.fit(X_train, y_train)
 
     # test model
@@ -167,6 +167,7 @@ for i, sample_size in enumerate(train_sample_sizes):
     # evaluating performance
     print("-> Evaluating performance...")
     mad = MAD(loss_func(y_pred, y_test))
+    
     print("-> Performance MAD: %.4f" % mad)
     
     # assign value to MAD list

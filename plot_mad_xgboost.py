@@ -41,14 +41,17 @@ train_sample_sizes = np.logspace(3, 6, 30)  # 1E3 -> 1E6
 test_sample_size = int(1E5)  # size of test sample
 features_name = ['u10', 'g10', 'r10', 'i10', 'z10', 'y10']
 labels_name = 'redshift'
-# Regressor = RandomForestRegressor
-# Regressor = XGBRegressor
-# Regressor = KNeighborsRegressor
-Regressor = AdaBoostRegressor
+
+Regressor = XGBRegressor
+parameters = {
+    "n_estimators": 1000,
+    "max_depth": 5,
+    "learning_rate": 0.1
+}
 
 # output parameters
 output_dir = 'outputs'
-output_prefix = 'adaboost'
+output_prefix = 'xgboost_tuned'
 
 ###############
 # plot styles #
@@ -157,7 +160,7 @@ for i, sample_size in enumerate(train_sample_sizes):
 
     # train model
     print("-> Training model...")
-    model = Regressor()
+    model = Regressor(**parameters)
     model.fit(X_train, y_train)
 
     # test model
