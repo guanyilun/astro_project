@@ -17,6 +17,7 @@ The script produces two files as output
 
 import os
 import matplotlib as mpl
+mpl.use("Agg")
 import matplotlib.pyplot as plt
 import pandas as pd
 import numpy as np
@@ -59,7 +60,6 @@ output_prefix = 'xgboost_tuned'
 
 mpl.style.use('classic')
 plt.rc('font', family='serif', serif='Times')
-# plt.rc('text', usetex=True)
 plt.rc('xtick', labelsize=12)
 plt.rc('ytick', labelsize=12)
 plt.rc('axes', labelsize=12)
@@ -144,6 +144,10 @@ cat_test = cat_data.tail(test_sample_size)
 # initialize an empty array to store the MAD for different sample sizes
 mads = np.zeros(len(train_sample_sizes))
 
+# initialize empty arrays to store the truth and predicted z values
+y_pred_list = []
+y_truth_list = []
+
 # loop over sample_size
 for i, sample_size in enumerate(train_sample_sizes):
     # first round it to nearest integar if not already 
@@ -172,9 +176,10 @@ for i, sample_size in enumerate(train_sample_sizes):
     mad = MAD(loss_func(y_pred, y_test))
     print("-> Performance MAD: %.4f" % mad)
     
-    # assign value to MAD list
+    # save values to list for furthur processing
     mads[i] = mad
-
+    y_pred_list.append(y_pred)
+    y_truth_list.append(y_truth)
 
 # check if output_dir exists
 if not os.path.exists(output_dir):
@@ -185,6 +190,16 @@ if not os.path.exists(output_dir):
 data_filename = os.path.join(output_dir, "%s.npy" % output_prefix)
 print("Saving data: %s" % data_filename)
 output_data = np.stack([train_sample_sizes, mads], axis=0)
+np.save(data_filename, output_data)
+
+data_filename = os.path.join(output_dir, "%s_pred.npy" % output_prefix)
+print("Saving data: %s" % data_filename)
+output_data = np.stack(y_pred_list, axis=0)
+np.save(data_filename, output_data)
+
+data_filename = os.path.join(output_dir, "%s_truth.npy" % output_prefix)
+print("Saving data: %s" % data_filename)
+output_data = np.stack(y_truth_list, axis=0)
 np.save(data_filename, output_data)
 
 # save plots

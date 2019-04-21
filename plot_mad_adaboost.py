@@ -55,7 +55,6 @@ output_prefix = 'adaboost'
 
 mpl.style.use('classic')
 plt.rc('font', family='serif', serif='Times')
-# plt.rc('text', usetex=True)
 plt.rc('xtick', labelsize=12)
 plt.rc('ytick', labelsize=12)
 plt.rc('axes', labelsize=12)
