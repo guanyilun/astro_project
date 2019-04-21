@@ -43,11 +43,15 @@ labels_name = 'redshift'
 
 # regressor parameters
 Regressor = AdaBoostRegressor
-parameters = {}
+parameters = {
+    "n_estimators": 50,
+    "learning_rate": 0.5,
+    "loss": 'linear'
+}
 
 # output parameters
 output_dir = 'outputs'
-output_prefix = 'adaboost'
+output_prefix = 'adaboost_tuned'
 
 ###############
 # plot styles #

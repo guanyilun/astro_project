@@ -17,6 +17,7 @@ The script produces two files as output
 
 import os
 import matplotlib as mpl
+mpl.use("Agg")
 import matplotlib.pyplot as plt
 import pandas as pd
 import numpy as np
