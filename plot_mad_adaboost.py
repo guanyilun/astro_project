@@ -17,6 +17,7 @@ The script produces two files as output
 
 import os
 import matplotlib as mpl
+mpl.use("Agg")
 import matplotlib.pyplot as plt
 import pandas as pd
 import numpy as np
@@ -25,9 +26,7 @@ from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import StandardScaler
 from scipy.optimize import curve_fit
 
-from xgboost import XGBRegressor
-from sklearn.ensemble import RandomForestRegressor, AdaBoostRegressor
-from sklearn.neighbors import KNeighborsRegressor
+from sklearn.ensemble import AdaBoostRegressor
 
 #####################
 # define parameters #
@@ -41,10 +40,10 @@ train_sample_sizes = np.logspace(3, 6, 30)  # 1E3 -> 1E6
 test_sample_size = int(1E5)  # size of test sample
 features_name = ['u10', 'g10', 'r10', 'i10', 'z10', 'y10']
 labels_name = 'redshift'
-# Regressor = RandomForestRegressor
-# Regressor = XGBRegressor
-# Regressor = KNeighborsRegressor
+
+# regressor parameters
 Regressor = AdaBoostRegressor
+parameters = {}
 
 # output parameters
 output_dir = 'outputs'
@@ -141,6 +140,10 @@ cat_test = cat_data.tail(test_sample_size)
 # initialize an empty array to store the MAD for different sample sizes
 mads = np.zeros(len(train_sample_sizes))
 
+# initialize empty arrays to store the truth and predicted z values
+y_pred_list = []
+y_truth_list = []
+
 # loop over sample_size
 for i, sample_size in enumerate(train_sample_sizes):
     # first round it to nearest integar if not already 
@@ -166,11 +169,13 @@ for i, sample_size in enumerate(train_sample_sizes):
 
     # evaluating performance
     print("-> Evaluating performance...")
-    mad = MAD(loss_func(y_pred, y_test))
+    mad = MAD(loss_func(y_pred, y_truth))
     print("-> Performance MAD: %.4f" % mad)
     
-    # assign value to MAD list
+    # save values to list for furthur processing
     mads[i] = mad
+    y_pred_list.append(y_pred)
+    y_truth_list.append(y_truth)
 
 
 # check if output_dir exists
@@ -182,6 +187,16 @@ if not os.path.exists(output_dir):
 data_filename = os.path.join(output_dir, "%s.npy" % output_prefix)
 print("Saving data: %s" % data_filename)
 output_data = np.stack([train_sample_sizes, mads], axis=0)
+np.save(data_filename, output_data)
+
+data_filename = os.path.join(output_dir, "%s_pred.npy" % output_prefix)
+print("Saving data: %s" % data_filename)
+output_data = np.stack(y_pred_list, axis=0)
+np.save(data_filename, output_data)
+
+data_filename = os.path.join(output_dir, "%s_truth.npy" % output_prefix)
+print("Saving data: %s" % data_filename)
+output_data = np.stack(y_truth_list, axis=0)
 np.save(data_filename, output_data)
 
 # save plots

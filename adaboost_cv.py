@@ -17,6 +17,7 @@ The script produces two files as output
 
 import os
 import matplotlib as mpl
+mpl.use("Agg")
 import matplotlib.pyplot as plt
 import pandas as pd
 import numpy as np
@@ -24,10 +25,9 @@ import numpy as np
 from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import StandardScaler
 from scipy.optimize import curve_fit
+from sklearn.model_selection import GridSearchCV
 
-from xgboost import XGBRegressor
-from sklearn.ensemble import RandomForestRegressor, AdaBoostRegressor
-from sklearn.neighbors import KNeighborsRegressor
+from sklearn.ensemble import AdaBoostRegressor
 
 #####################
 # define parameters #
@@ -37,29 +37,18 @@ from sklearn.neighbors import KNeighborsRegressor
 cat_filename = 'data/Catalog_Graham+2018_10YearPhot.dat'
 
 # model parameters
-train_sample_sizes = np.logspace(3, 6, 30)  # 1E3 -> 1E6
+train_sample_size = int(1E5)  # 1E5
 test_sample_size = int(1E5)  # size of test sample
 features_name = ['u10', 'g10', 'r10', 'i10', 'z10', 'y10']
 labels_name = 'redshift'
-# Regressor = RandomForestRegressor
-# Regressor = XGBRegressor
-# Regressor = KNeighborsRegressor
+
+# regression parameters
 Regressor = AdaBoostRegressor
-
-# output parameters
-output_dir = 'outputs'
-output_prefix = 'adaboost'
-
-###############
-# plot styles #
-###############
-
-mpl.style.use('classic')
-plt.rc('font', family='serif', serif='Times')
-# plt.rc('text', usetex=True)
-plt.rc('xtick', labelsize=12)
-plt.rc('ytick', labelsize=12)
-plt.rc('axes', labelsize=12)
+parameters = {
+    "n_estimators": [50, 100, 200, 500],
+    "learning_rate": [1, 0.75, 0.5],
+    "loss": ['linear', 'square', 'exponential'] 
+}
 
 #####################
 # utility functions #
@@ -131,75 +120,37 @@ cat_data = load_data(cat_filename)
 
 # select a subset to be used for our training and testing
 # randomly sample a max(train_sample_sizes) + test_sample_size subset
-total_sample_size = int(round(max(train_sample_sizes) + test_sample_size))
+total_sample_size = int(round(train_sample_size + test_sample_size))
 cat_data = cat_data.sample(total_sample_size)
 
 # split into two groups: train and test
-cat_train = cat_data.head(int(round(max(train_sample_sizes))))
+cat_train = cat_data.head(int(round(train_sample_size)))
 cat_test = cat_data.tail(test_sample_size)
 
 # initialize an empty array to store the MAD for different sample sizes
-mads = np.zeros(len(train_sample_sizes))
+sample_size = int(round(train_sample_size))
 
-# loop over sample_size
-for i, sample_size in enumerate(train_sample_sizes):
-    # first round it to nearest integar if not already 
-    sample_size = int(round(sample_size))
-    print("sample_size: %d" % sample_size)
+# first round it to nearest integar if not already 
+sample_size = int(round(sample_size))
+print("sample_size: %d" % sample_size)
 
-    # sample the required number of data from catalog
-    print("-> Randomly sampling %d data from catalog..." % sample_size)
-    cat_train_sample = cat_train.sample(sample_size)
+# sample the required number of data from catalog
+print("-> Randomly sampling %d data from catalog..." % sample_size)
+cat_train_sample = cat_train.sample(sample_size)
 
-    # Get training and testing data and labels
-    print("-> Spliting into train and test sets...")
-    X_train, X_test, y_train, y_test = prepare_data(cat_train_sample, cat_test)
+# Get training and testing data and labels
+print("-> Spliting into train and test sets...")
+X_train, X_test, y_train, y_test = prepare_data(cat_train_sample, cat_test)
 
-    # train model
-    print("-> Training model...")
-    model = Regressor()
-    model.fit(X_train, y_train)
+# train model
+print("-> Training model...")
 
-    # test model
-    y_pred = model.predict(X_test)
-    y_truth = y_test
+# use a grid search to narrow down the best parameters
+model = GridSearchCV(estimator=Regressor(), param_grid=parameters)
+model.fit(X_train, y_train)
 
-    # evaluating performance
-    print("-> Evaluating performance...")
-    mad = MAD(loss_func(y_pred, y_test))
-    print("-> Performance MAD: %.4f" % mad)
-    
-    # assign value to MAD list
-    mads[i] = mad
+# test model
+print(model.best_params_)
 
-
-# check if output_dir exists
-if not os.path.exists(output_dir):
-    print("Path %s not found, creating now..." % output_dir)
-    os.makedirs(output_dir)
-
-# save data for future processing
-data_filename = os.path.join(output_dir, "%s.npy" % output_prefix)
-print("Saving data: %s" % data_filename)
-output_data = np.stack([train_sample_sizes, mads], axis=0)
-np.save(data_filename, output_data)
-
-# save plots
-fig_filename = os.path.join(output_dir, "%s.png" % output_prefix)
-print("Saving plot: %s" % fig_filename)
-plt.figure(figsize=(12,9))
-plt.plot(train_sample_sizes, mads, 'b.')
-
-# curve fitting
-popt, pcov = curve_fit(target_func, train_sample_sizes, mads, bounds=([0,0,-1],[5,5,0]))
-c, A, n = popt
-label = r"$%.4f + %.4f N^{%.1f}$" % (c, A, n)
-plt.plot(train_sample_sizes, target_func(train_sample_sizes, *popt), 'k-', label=label)
-
-plt.xlabel("training sample sizes")
-plt.ylabel("NMAD")
-plt.xscale("log")
-plt.legend()
-plt.savefig(fig_filename)
-
+# assign value to MAD list
 print("Done!")
