@@ -29,7 +29,7 @@ from scipy.optimize import curve_fit
 from sklearn.gaussian_process import GaussianProcessRegressor
 import gc
 
-from .utils import *
+from utils import *
 
 #####################
 # define parameters #

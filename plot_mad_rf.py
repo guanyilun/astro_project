@@ -27,7 +27,7 @@ from sklearn.preprocessing import StandardScaler
 from scipy.optimize import curve_fit
 from sklearn.ensemble import RandomForestRegressor
 
-from .utils import *
+from utils import *
 
 #####################
 # define parameters #

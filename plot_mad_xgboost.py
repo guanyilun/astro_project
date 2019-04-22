@@ -30,7 +30,7 @@ from xgboost import XGBRegressor
 from sklearn.ensemble import RandomForestRegressor, AdaBoostRegressor
 from sklearn.neighbors import KNeighborsRegressor
 
-from .utils import *
+from utils import *
 
 #####################
 # define parameters #

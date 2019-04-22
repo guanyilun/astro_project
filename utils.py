@@ -3,6 +3,11 @@ import numpy as np
 from sklearn.preprocessing import StandardScaler
 from sklearn.metrics import make_scorer
 
+# input parameters
+cat_filename = 'data/Catalog_Graham+2018_10YearPhot.dat'
+features_name = ['u10', 'g10', 'r10', 'i10', 'z10', 'y10']
+labels_name = 'redshift'
+
 def load_data(cat_filename):
     """Loads a given number of rows from catalog and return test and train"""
     # load catalog data
