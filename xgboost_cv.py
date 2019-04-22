@@ -28,7 +28,7 @@ from sklearn.model_selection import GridSearchCV
 
 from xgboost import XGBRegressor
 
-from .utils import *
+from utils import *
 
 #####################
 # define parameters #

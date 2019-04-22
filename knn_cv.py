@@ -29,7 +29,7 @@ from sklearn.model_selection import GridSearchCV
 from xgboost import XGBRegressor
 from sklearn.neighbors import KNeighborsRegressor
 
-from .utils import *
+from utils import *
 
 #####################
 # define parameters #

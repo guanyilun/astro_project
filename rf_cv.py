@@ -29,7 +29,7 @@ from sklearn.model_selection import GridSearchCV
 from sklearn.ensemble import RandomForestRegressor
 from sklearn.metrics import make_scorer
 
-from .utils import *
+from utils import *
 
 #####################
 # define parameters #
