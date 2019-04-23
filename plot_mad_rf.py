@@ -45,12 +45,12 @@ labels_name = 'redshift'
 # regressor parameters
 Regressor = RandomForestRegressor
 parameters = {
-    'n_estimators': 500
+    'n_estimators': 1000
 }
 
 # output parameters
 output_dir = 'outputs'
-output_prefix = 'randfor_tuned'
+output_prefix = 'randfor_tuned_ext'
 
 ###############
 # plot styles #

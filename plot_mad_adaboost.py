@@ -33,14 +33,9 @@ from utils import *
 # define parameters #
 #####################
 
-# input parameters
-cat_filename = 'data/Catalog_Graham+2018_10YearPhot.dat'
-
 # model parameters
 train_sample_sizes = np.logspace(3, 6, 30)  # 1E3 -> 1E6
 test_sample_size = int(1E5)  # size of test sample
-features_name = ['u10', 'g10', 'r10', 'i10', 'z10', 'y10']
-labels_name = 'redshift'
 
 # regressor parameters
 Regressor = AdaBoostRegressor

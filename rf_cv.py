@@ -27,7 +27,6 @@ from scipy.optimize import curve_fit
 from sklearn.model_selection import GridSearchCV
 
 from sklearn.ensemble import RandomForestRegressor
-from sklearn.metrics import make_scorer
 
 from utils import *
 
@@ -87,7 +86,7 @@ X_train, X_test, y_train, y_test = prepare_data(cat_train_sample, cat_test)
 print("-> Training model...")
 
 # use a grid search to narrow down the best parameters
-model = GridSearchCV(estimator=Regressor(), param_grid=parameters)
+model = GridSearchCV(estimator=Regressor(), param_grid=parameters, scoring=score_func)
 model.fit(X_train, y_train)
 
 # test model

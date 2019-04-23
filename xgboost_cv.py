@@ -46,8 +46,8 @@ labels_name = 'redshift'
 # regression parameters
 Regressor = XGBRegressor
 parameters = {
-    "n_estimators": [100, 200, 500, 1000, 2000],
-    "max_depth": [3, 4, 5, 6, 7, 8, 9, 10],
+    "n_estimators": [50, 100, 200, 500, 1000, 2000],
+    "max_depth": [3, 5, 7, 9, 11, 13],
     "learning_rate": [0.1, 0.01, 0.001],
 }
 
@@ -88,7 +88,7 @@ X_train, X_test, y_train, y_test = prepare_data(cat_train_sample, cat_test)
 print("-> Training model...")
 
 # use a grid search to narrow down the best parameters
-model = GridSearchCV(estimator=Regressor(), param_grid=parameters)
+model = GridSearchCV(estimator=Regressor(), param_grid=parameters, scoring=score_func)
 model.fit(X_train, y_train)
 
 # test model
