@@ -45,7 +45,8 @@ labels_name = 'redshift'
 # regressor parameters
 Regressor = RandomForestRegressor
 parameters = {
-    'n_estimators': 1000
+    'n_estimators': 1000,
+    'n_jobs': 8,
 }
 
 # output parameters
@@ -121,6 +122,21 @@ for i, sample_size in enumerate(train_sample_sizes):
     y_pred_list.append(y_pred)
     y_truth_list.append(y_truth)
 
+    # save data for future processing
+    data_filename = os.path.join(output_dir, "%s.npy" % output_prefix)
+    print("Saving data: %s" % data_filename)
+    output_data = np.stack([train_sample_sizes, mads], axis=0)
+    np.save(data_filename, output_data)
+
+    data_filename = os.path.join(output_dir, "%s_pred.npy" % output_prefix)
+    print("Saving data: %s" % data_filename)
+    output_data = np.stack(y_pred_list, axis=0)
+    np.save(data_filename, output_data)
+
+    data_filename = os.path.join(output_dir, "%s_truth.npy" % output_prefix)
+    print("Saving data: %s" % data_filename)
+    output_data = np.stack(y_truth_list, axis=0)
+    np.save(data_filename, output_data)
 
 # check if output_dir exists
 if not os.path.exists(output_dir):
