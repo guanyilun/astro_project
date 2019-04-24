@@ -13,8 +13,8 @@ from utils import loss_func
 #####################
 
 input_dir = "./outputs/"
-output_dir = "./outputs/knn/hist/"
-prefix = "knn_tuned"
+output_dir = "./outputs/xgboost/hist/"
+prefix = "xgboost_diff"
 
 # decide if we want to plot all
 plot_all = True

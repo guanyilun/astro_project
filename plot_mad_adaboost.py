@@ -47,7 +47,7 @@ parameters = {
 
 # output parameters
 output_dir = 'outputs'
-output_prefix = 'adaboost_tuned_new'
+output_prefix = 'adaboost_diff'
 
 ###############
 # plot styles #

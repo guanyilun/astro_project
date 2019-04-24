@@ -42,19 +42,18 @@ cat_filename = 'data/Catalog_Graham+2018_10YearPhot.dat'
 # model parameters
 train_sample_sizes = np.logspace(3, 6, 30)  # 1E3 -> 1E6
 test_sample_size = int(1E5)  # size of test sample
-features_name = ['u10', 'g10', 'r10', 'i10', 'z10', 'y10']
-labels_name = 'redshift'
 
 Regressor = XGBRegressor
 parameters = {
     "n_estimators": 1000,
     "max_depth": 5,
-    "learning_rate": 0.1
+    "learning_rate": 0.1,
+    "n_jobs": 8,
 }
 
 # output parameters
 output_dir = 'outputs'
-output_prefix = 'xgboost_tuned'
+output_prefix = 'xgboost_diff'
 
 ###############
 # plot styles #
@@ -124,6 +123,23 @@ for i, sample_size in enumerate(train_sample_sizes):
     y_pred_list.append(y_pred)
     y_truth_list.append(y_truth)
 
+    # save data for future processing
+    data_filename = os.path.join(output_dir, "%s.npy" % output_prefix)
+    print("Saving data: %s" % data_filename)
+    output_data = np.stack([train_sample_sizes, mads], axis=0)
+    np.save(data_filename, output_data)
+
+    data_filename = os.path.join(output_dir, "%s_pred.npy" % output_prefix)
+    print("Saving data: %s" % data_filename)
+    output_data = np.stack(y_pred_list, axis=0)
+    np.save(data_filename, output_data)
+
+    data_filename = os.path.join(output_dir, "%s_truth.npy" % output_prefix)
+    print("Saving data: %s" % data_filename)
+    output_data = np.stack(y_truth_list, axis=0)
+    np.save(data_filename, output_data)
+
+    
 # check if output_dir exists
 if not os.path.exists(output_dir):
     print("Path %s not found, creating now..." % output_dir)

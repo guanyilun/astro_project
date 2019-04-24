@@ -5,7 +5,8 @@ from sklearn.metrics import make_scorer
 
 # input parameters
 cat_filename = 'data/Catalog_Graham+2018_10YearPhot.dat'
-features_name = ['u10', 'g10', 'r10', 'i10', 'z10', 'y10']
+# features_name = ['u10', 'g10', 'r10', 'i10', 'z10', 'y10']
+features_name = ['u10', 'g-u', 'r-g', 'i-r', 'z-i', 'y-z']
 labels_name = 'redshift'
 
 def load_data(cat_filename):
@@ -20,6 +21,13 @@ def load_data(cat_filename):
                         'u10','uerr10','g10','gerr10','r10','rerr10',\
                         'i10','ierr10','z10','zerr10','y10','yerr10']
 
+    #ugrizy
+    cat_data['g-u'] = cat_data['g10'] - cat_data['u10']
+    cat_data['r-g'] = cat_data['r10'] - cat_data['g10']
+    cat_data['i-r'] = cat_data['i10'] - cat_data['r10']
+    cat_data['z-i'] = cat_data['z10'] - cat_data['i10']
+    cat_data['y-z'] = cat_data['y10'] - cat_data['z10']
+    
     return cat_data
 
 def prepare_data(cat_train, cat_test, use_scaler=True):

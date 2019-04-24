@@ -40,14 +40,14 @@ cat_filename = 'data/Catalog_Graham+2018_10YearPhot.dat'
 
 # model parameters
 train_sample_size = int(1E5)  # 1E5
-test_sample_size = int(1E5)  # size of test sample
+test_sample_size = int(1E4)  # size of test sample
 features_name = ['u10', 'g10', 'r10', 'i10', 'z10', 'y10']
 labels_name = 'redshift'
 
 # regression parameters
 Regressor = KNeighborsRegressor
 parameters = {
-    "n_neighbors": [5, 6, 7, 8],
+    "n_neighbors": [5, 7, 9, 15, 20, 30],
     "leaf_size": [20,30,40,50],
     "p": [1,2],
 }

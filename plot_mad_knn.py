@@ -47,7 +47,7 @@ parameters = {
 
 # output parameters
 output_dir = 'outputs'
-output_prefix = 'knn_tuned'
+output_prefix = 'knn_diff'
 
 ###############
 # plot styles #

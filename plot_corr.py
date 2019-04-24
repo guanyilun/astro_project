@@ -13,8 +13,8 @@ from utils import loss_func
 #####################
 
 input_dir = "./outputs/"
-output_dir = "./outputs/knn"
-prefix = "knn_tuned"
+output_dir = "./outputs/randfor_diff"
+prefix = "randfor_diff"
 
 # decide if we want to plot all
 plot_all = True
@@ -96,13 +96,13 @@ def generate_corr_plot(index_to_plot):
     plt.ylim(-0.1, 4,1)    
     plt.xlabel(r"$z_{\rm spec}$", fontsize=20)
     plt.ylabel(r"$z_{\rm phot}$", fontsize=20)
-    plt.legend(loc="best")
+    plt.legend(loc="upper left")
 
     output_filename = os.path.join(output_dir, "%s_corr_%d.png" %
                                    (prefix, index_to_plot))
     print("Saving plot: %s" % output_filename)
     plt.savefig(output_filename)
-    plt.clf()
+    plt.close()
     
 
 # check if the folder exists
